@@ -31,10 +31,10 @@ public class UserService {
 
     public User register(String email, String username, String password) throws Exception {
         if (!isPasswordValid(password)) {
-            throw new Exception("Пароль не відповідає політиці безпеки");
+            throw new Exception("Password are not ok");
         }
         if (userRepository.findByUsername(username).isPresent()) {
-            throw new Exception("Користувач вже існує");
+            throw new Exception("Username is already in use");
         }
 
         User user = new User();
@@ -42,11 +42,5 @@ public class UserService {
         user.setUsername(username);
         user.setPasswordHash(hashPassword(password));
         return userRepository.save(user);
-    }
-
-    public boolean login(String username, String password) {
-        Optional<User> userOpt = userRepository.findByUsername(username);
-        if (userOpt.isEmpty()) return false;
-        return passwordEncoder.matches(password, userOpt.get().getPasswordHash());
     }
 }

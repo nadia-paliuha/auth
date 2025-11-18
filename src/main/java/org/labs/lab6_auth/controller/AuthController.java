@@ -20,7 +20,7 @@ public class AuthController {
         return "login";
     }
 
-    @PostMapping
+    /*@PostMapping
     public String loginUser(@RequestParam String username,
                             @RequestParam String password,
                             Model model) {
@@ -33,6 +33,6 @@ public class AuthController {
             model.addAttribute("error", "Wrong username or password!");
             return "login";
         }
-    }
+    }*/
 }
 
