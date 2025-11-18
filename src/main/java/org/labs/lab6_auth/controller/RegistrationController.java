@@ -1,5 +1,7 @@
 package org.labs.lab6_auth.controller;
 
+import org.labs.lab6_auth.exception.EmailAlreadyRegisteredException;
+import org.labs.lab6_auth.exception.InvalidPasswordException;
 import org.labs.lab6_auth.service.CaptchaService;
 import org.labs.lab6_auth.service.UserService;
 import org.springframework.stereotype.Controller;
@@ -51,7 +53,7 @@ public class RegistrationController {
             redirectAttributes.addFlashAttribute("message", "Successfully registered!. Now you can login.");
             return "redirect:/login";
 
-        } catch (Exception e) {
+        } catch (InvalidPasswordException | EmailAlreadyRegisteredException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             redirectAttributes.addFlashAttribute("email", email);
             redirectAttributes.addFlashAttribute("username", username);

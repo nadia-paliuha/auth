@@ -1,5 +1,6 @@
 package org.labs.lab6_auth.config;
 
+import org.labs.lab6_auth.error.CustomAuthFailureHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,19 +14,26 @@ import org.springframework.web.client.RestTemplate;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final CustomAuthFailureHandler failureHandler;
+
+    public SecurityConfig(CustomAuthFailureHandler failureHandler) {
+        this.failureHandler = failureHandler;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/register", "/login", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/register", "/login", "/activate", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/home").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
+                        //handler for errors
+                        .failureHandler(failureHandler)
                         .defaultSuccessUrl("/home", true)
-                        .failureUrl("/login?error")
                         .permitAll()
                 )
 

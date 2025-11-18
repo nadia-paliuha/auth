@@ -26,10 +26,10 @@ public class User {
     private String passwordHash;
 
     private boolean activated = false;
-    private String roles = "ROLE_USER";
-    private int failedAttempts = 0;
-    private Instant lockUntil;
-    private String totpSecret;
-    private String oauthProvider;
-    private Instant createdAt = Instant.now();
+    @Column(unique = true)
+    private String activationToken;
+
+    @Column(unique = true)
+    private String resetPasswordToken;
+    private Instant resetTokenExpiryDate;
 }
