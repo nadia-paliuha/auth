@@ -25,16 +25,17 @@ public class UserService {
         return true;
     }
 
+    //algorithm for hash, using BCryptPasswordEncoder
     public String hashPassword(String password) {
         return passwordEncoder.encode(password);
     }
 
     public User register(String email, String username, String password) throws Exception {
         if (!isPasswordValid(password)) {
-            throw new Exception("Password are not ok");
+            throw new Exception("The password does not meet the requirements");
         }
-        if (userRepository.findByUsername(username).isPresent()) {
-            throw new Exception("Username is already in use");
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new Exception("Email is already registered");
         }
 
         User user = new User();
