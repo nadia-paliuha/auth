@@ -1,4 +1,4 @@
-package org.labs.lab6_auth.error;
+package org.labs.lab6_auth.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

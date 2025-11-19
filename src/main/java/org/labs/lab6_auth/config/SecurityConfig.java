@@ -1,7 +1,9 @@
 package org.labs.lab6_auth.config;
 
-import org.labs.lab6_auth.error.CustomAuthFailureHandler;
-import org.labs.lab6_auth.error.CustomAuthSuccessHandler;
+import org.labs.lab6_auth.handler.CustomAuthFailureHandler;
+import org.labs.lab6_auth.handler.CustomAuthSuccessHandler;
+import org.labs.lab6_auth.repository.UserRepository;
+import org.labs.lab6_auth.service.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,7 +26,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public CustomOAuth2UserService customOAuth2UserService(UserRepository userRepository,
+                                                           PasswordEncoder passwordEncoder) {
+        return new CustomOAuth2UserService(userRepository, passwordEncoder);
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -40,7 +48,14 @@ public class SecurityConfig {
                         .failureHandler(failureHandler)
                         .permitAll()
                 )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        //for userInfo
+                        .userInfoEndpoint(user -> user.userService(customOAuth2UserService))
+                        //redirect to 2FA
+                        .successHandler(successHandler)
 
+                )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login")
