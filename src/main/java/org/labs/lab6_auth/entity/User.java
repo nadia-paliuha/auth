@@ -32,4 +32,7 @@ public class User {
     @Column(unique = true)
     private String resetPasswordToken;
     private Instant resetTokenExpiryDate;
+
+    private boolean twoFactorEnabled = false;
+    private String twoFactorSecret;
 }

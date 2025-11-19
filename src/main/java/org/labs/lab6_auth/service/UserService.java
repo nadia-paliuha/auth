@@ -1,5 +1,6 @@
 package org.labs.lab6_auth.service;
 
+import org.labs.lab6_auth.config.TotpUtil;
 import org.labs.lab6_auth.entity.User;
 import org.labs.lab6_auth.exception.EmailAlreadyRegisteredException;
 import org.labs.lab6_auth.exception.InvalidPasswordException;
@@ -7,6 +8,8 @@ import org.labs.lab6_auth.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -65,5 +68,24 @@ public class UserService {
                     return true;
                 })
                 .orElse(false);
+    }
+
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+    }
+
+    //for 2fa
+    public String generateQrUrlForUser(User user) {
+        if (user.getTwoFactorSecret() == null || user.getTwoFactorSecret().isEmpty()) return null;
+
+        String otpAuthUrl = TotpUtil.getOtpAuthURL("SecurityLab", user.getUsername(), user.getTwoFactorSecret());
+
+        try {
+            String encodedOtpUrl = URLEncoder.encode(otpAuthUrl, StandardCharsets.UTF_8);
+            return "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodedOtpUrl;
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

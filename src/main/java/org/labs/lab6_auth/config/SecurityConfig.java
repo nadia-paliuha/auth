@@ -1,6 +1,7 @@
 package org.labs.lab6_auth.config;
 
 import org.labs.lab6_auth.error.CustomAuthFailureHandler;
+import org.labs.lab6_auth.error.CustomAuthSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,9 +16,11 @@ import org.springframework.web.client.RestTemplate;
 public class SecurityConfig {
 
     private final CustomAuthFailureHandler failureHandler;
+    private final CustomAuthSuccessHandler successHandler;
 
-    public SecurityConfig(CustomAuthFailureHandler failureHandler) {
+    public SecurityConfig(CustomAuthFailureHandler failureHandler, CustomAuthSuccessHandler successHandler) {
         this.failureHandler = failureHandler;
+        this.successHandler = successHandler;
     }
 
     @Bean
@@ -31,9 +34,10 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
+                        //for 2FA
+                        .successHandler(successHandler)
                         //handler for errors
                         .failureHandler(failureHandler)
-                        .defaultSuccessUrl("/home", true)
                         .permitAll()
                 )
 
